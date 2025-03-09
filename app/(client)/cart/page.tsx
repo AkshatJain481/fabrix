@@ -26,9 +26,29 @@ import {
   Metadata,
 } from "@/actions/createCheckoutSession";
 
+interface RazorpayOptions {
+  key: string;
+  amount: number;
+  currency: string;
+  name?: string;
+  description?: string;
+  order_id?: string;
+  handler: (response: { razorpay_payment_id: string }) => void;
+  prefill?: {
+    name: string;
+    email: string;
+  };
+  theme?: {
+    color: string;
+  };
+}
 declare global {
   interface Window {
-    Razorpay: any;
+    Razorpay?: {
+      new (options: RazorpayOptions): {
+        open: () => void;
+      };
+    };
   }
 }
 
@@ -88,12 +108,12 @@ const CartPage = () => {
 
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
-        amount: order.amount,
+        amount: Number(order.amount),
         currency: order.currency,
         name: "Your Store",
         description: "Purchase Description",
         order_id: order.id,
-        handler: async function (response: any) {
+        handler: async function (response: { razorpay_payment_id: string }) {
           window.location.href = `${window.location.origin}/success?order_id=${order.id}&session_id=${response.razorpay_payment_id}`;
         },
         prefill: {
@@ -288,7 +308,7 @@ const CartPage = () => {
                       >
                         Proceed to Checkout
                       </Button>
-nv                    </div>
+                    </div>
                   </div>
                 </div>
               </div>

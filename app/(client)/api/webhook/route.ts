@@ -47,7 +47,20 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ received: true });
 }
 
-async function createOrderInSanity(payment: any) {
+interface RazorpayPaymentEntity {
+  id: string;
+  amount: number;
+  currency: string;
+  email?: string;
+  notes?: {
+    orderNumber?: string;
+    customerName?: string;
+    clerkUserId?: string;
+  };
+  created_at: number;
+}
+
+async function createOrderInSanity(payment: RazorpayPaymentEntity) {
   const { id, amount, currency, email, notes, created_at } = payment;
 
   const orderNumber = notes?.orderNumber || `ORD-${id}`;
